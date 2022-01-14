@@ -53,6 +53,12 @@ VixError ConnectEx(VixDiskLibConnectParams *cnxParams, bool readOnly, char* tran
     return vixError;
 }
 
+VixError ConnectExFixSsm(VixDiskLibConnectParams *cnxParams, bool readOnly, char* ssMoRef, char* transportModes, VixDiskLibConnection *connection) {
+    VixError vixError;
+    vixError = VixDiskLib_ConnectEx(cnxParams, readOnly, ssMoRef, transportModes, connection);
+    return vixError;
+}
+
 DiskHandle Open(VixDiskLibConnection conn, char* path, uint32 flags)
 {
     VixDiskLibHandle diskHandle;
