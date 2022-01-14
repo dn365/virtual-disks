@@ -124,6 +124,21 @@ func ConnectEx(appGlobal ConnectParams) (VixDiskLibConnection, VddkError) {
 	return connection, nil
 }
 
+func ConnectExFixSsMoref(appGlobal ConnectParams) (VixDiskLibConnection, VddkError) {
+	var connection VixDiskLibConnection
+	cnxParams, toFree := prepareConnectParams(appGlobal)
+	defer freeParams(toFree)
+	modes := C.CString(appGlobal.mode)
+	defer C.free(unsafe.Pointer(modes))
+	ssMoref := C.CString(appGloba.ssMoref)
+	err := C.ConnectExFixSsm(cnxParams, C._Bool(appGlobal.readOnly), ssMoref, modes, &connection.conn)
+	if err != 0 {
+		return VixDiskLibConnection{}, NewVddkError(uint64(err), fmt.Sprintf("ConnectEx failed. The error code is %d.", err))
+	}
+
+	return connection, nil
+}
+
 func PrepareForAccess(appGlobal ConnectParams) VddkError {
 	name := C.CString(appGlobal.identity)
 	defer C.free(unsafe.Pointer(name))

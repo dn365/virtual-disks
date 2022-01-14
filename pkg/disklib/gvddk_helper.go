@@ -96,6 +96,7 @@ type ConnectParams struct {
 	flag       uint32
 	readOnly   bool
 	mode       string
+	ssMoref    string
 }
 
 type VixDiskLibHandle struct {
@@ -189,6 +190,11 @@ func NewConnectParams(vmxSpec string, serverName string, thumbPrint string, user
 		readOnly:   readOnly,
 		mode:       mode,
 	}
+	return params
+}
+
+func SetFixParams(params ConnectParams, ssMoref string) ConnectParams {
+	params.ssMoref = ssMoref
 	return params
 }
 
