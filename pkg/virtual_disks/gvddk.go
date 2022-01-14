@@ -72,6 +72,32 @@ func Open(globalParams disklib.ConnectParams, logger logrus.FieldLogger) (DiskRe
 	return NewDiskReaderWriter(diskHandle, logger), nil
 }
 
+func OpenFix(globalParams disklib.ConnectParams, logger logrus.FieldLogger) (DiskReaderWriter, disklib.VddkError) {
+	err := disklib.PrepareForAccess(globalParams)
+	if err != nil {
+		return DiskReaderWriter{}, err
+	}
+	conn, err := disklib.ConnectExFixSsMoref(globalParams)
+	if err != nil {
+		disklib.EndAccess(globalParams)
+		return DiskReaderWriter{}, err
+	}
+	dli, err := disklib.Open(conn, globalParams)
+	if err != nil {
+		disklib.Disconnect(conn)
+		disklib.EndAccess(globalParams)
+		return DiskReaderWriter{}, err
+	}
+	info, err := disklib.GetInfo(dli)
+	if err != nil {
+		disklib.Disconnect(conn)
+		disklib.EndAccess(globalParams)
+		return DiskReaderWriter{}, err
+	}
+	diskHandle := NewDiskHandle(dli, conn, globalParams, info)
+	return NewDiskReaderWriter(diskHandle, logger), nil
+}
+
 type DiskReaderWriter struct {
 	diskHandle DiskConnectHandle
 	offset     *int64
